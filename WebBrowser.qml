@@ -11,7 +11,7 @@ Item {
 
     WebSocketTransport {
         id: transport
-        onMessageReceived: console.log("Message received")
+        onMessageChanged: console.log("Message " + message)
     }
 
     WebSocketServer {
@@ -36,7 +36,8 @@ Item {
         // ID, under which this object will be known at WebEngineView side
         WebChannel.id: "backend"
 
-        function close() {
+        function changeText(message) {
+            console.log("Message " + message)
             browser.source = ''
         }
     }
@@ -50,7 +51,7 @@ Item {
     WebView {
         id: webView
         anchors.fill: parent
-        url: "file:///" + path + "/ios/niqt.html"
+        url: (Qt.platform.os == "ios")? "file:///" + path + "/ios/niqt.html" : "qrc:///niqt.html"
 
         onLoadingChanged: {
             if (loadRequest.status === WebView.LoadSucceededStatus ) {
@@ -66,7 +67,7 @@ Item {
                     };
 
                     window.close = function() {
-                       backend.close();
+                       backend.changeText("close");
                     }
 
                     socket.onerror = function(evt) {
